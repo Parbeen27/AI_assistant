@@ -1,5 +1,4 @@
 
-import {chatresponse} from "../config/gemini.js"
 import asyncMiddleware from "../middleware/async.middleware.js"
 import { Ask, getUserinfo } from "../services/user.service.js"
 import AppError from "../utils/error.utils.js"
@@ -15,6 +14,6 @@ export const askassistant = asyncMiddleware(async(req,res)=>{
     const {message}=req.body
     const response = await Ask(message)
     res.json({
-        response
+        "ai": response
     })
 })

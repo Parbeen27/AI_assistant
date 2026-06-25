@@ -1,3 +1,7 @@
 Dockerfile
 node_modules
 .env
+.dockerignore
+.gitignore
+.git
+npm-debug.log

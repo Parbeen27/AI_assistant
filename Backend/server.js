@@ -8,7 +8,5 @@ const port = process.env.PORT
 
 app.listen(port, () => {
     connectdb()
-
-    
     console.log(`Example app listening on port ${port}!`)
 })

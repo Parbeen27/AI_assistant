@@ -76,10 +76,14 @@ useEffect(() => {
   recognitionRef.current = recognition;
 }, []);
 
-  const startListening = () => {
-  if (!recognitionRef.current) return;
+ const startListening = () => {
+  if (!recognitionRef.current || isListening) return;
 
-  recognitionRef.current.start();
+  try {
+    recognitionRef.current.start();
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 const handleSend = async () => {
@@ -110,7 +114,7 @@ const handleSend = async () => {
   setMessage("");
 };
   return (
-    <div className="w-full h-screen bg-gradient-to-t from-black via-slate-950 to-blue-950 flex flex-col">
+    <div className="w-full h-screen bg-linear-to-t from-black via-slate-950 to-blue-950 flex flex-col">
       {/* Header */}
       <div className="h-20 flex items-center justify-between px-6 border-b border-white/10">
   <h1 className="text-white text-2xl font-bold">

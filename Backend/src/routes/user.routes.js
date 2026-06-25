@@ -11,7 +11,7 @@ router.get("/me",
     getUser
 )
 router.post("/ai",
-    isAuthenticated,
+    // isAuthenticated,
     askassistant
 )
 export default router

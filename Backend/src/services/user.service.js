@@ -1,6 +1,6 @@
 import User from "../models/user.model.js"
 import AppError from "../utils/error.utils.js"
-import { chatresponse } from "../config/gemini.js"
+import { graph } from "../config/gemini.js"
 import moment from "moment"
 import { evaluate } from "mathjs"
 export const getUserinfo = async(userId) => {
@@ -115,5 +115,12 @@ export const Ask = async(command) => {
     if(localIntent){
         return localIntent
     }
-    return await chatresponse(command)
+    const msg = await graph.invoke({messages:[
+        {
+            role:"user",
+            content:command
+        }
+    ]},
+{configurable:{thread_id:"user123"}})
+    return msg.messages[msg.messages.length-1].content
 }

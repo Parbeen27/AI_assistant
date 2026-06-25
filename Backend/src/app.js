@@ -11,15 +11,10 @@ app.use(cors({
     origin: process.env.CLIENT_URL,
     credentials: true
 }))
-app.get("/",(req,res)=>{
-    console.log("works");
-    return res.status(200).json({
-        message:"hello"
-    })
-    
-})
+
 app.use("/api/auth",Authroutes)
 app.use("/api/user",Userroutes)
+
 app.use(errormiddleware)
 
 export default app
