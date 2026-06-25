@@ -54,34 +54,6 @@ function detectIntent(command) {
             userinput: input.replace(/^play\s+/i, "")
         };
     }
-    if (input.includes("time")) {
-        return {
-            type: "current time",
-            userinput: "time",
-            response:moment().format('HH:mm:ss')
-        };
-    }
-    if (input.includes("month")) {
-        return {
-            type: "month",
-            userinput: "what month",
-            response:moment().month()
-        };
-    }
-    if (input.includes("today")) {
-        return {
-            type: "current dat",
-            userinput: "day",
-            response:moment().day()
-        };
-    }
-    if (input.includes("date")) {
-        return {
-            type: "current date",
-            userinput: "date",
-            response:moment().date()
-        };
-    }
     if (input.includes("+") || input.includes("-") || input.includes("*") || input.includes("/")) {
         const cal = input.split(" ")[1]
         console.log(cal);
@@ -111,10 +83,10 @@ function detectIntent(command) {
 }
 
 export const Ask = async(command) => {
-    const localIntent = detectIntent(command);
-    if(localIntent){
-        return localIntent
-    }
+    // const localIntent = detectIntent(command);
+    // if(localIntent){
+    //     return localIntent
+    // }
     const msg = await graph.invoke({messages:[
         {
             role:"user",

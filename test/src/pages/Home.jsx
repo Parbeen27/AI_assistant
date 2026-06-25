@@ -100,10 +100,11 @@ const handleSend = async () => {
     const res = await api.post("/user/ai", {
       message,
     });
+    console.log(res);
     
     const aiMessage = {
       role: "assistant",
-      content: res.data.response.response,
+      content: res.data.ai,
     };
 
     setMessages((prev) => [...prev, aiMessage]);

@@ -20,5 +20,5 @@ jobs:
                 username: ${{ secrets.USER }}
                 key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-                scripts:
+                script:
                     ~/deploy.sh
