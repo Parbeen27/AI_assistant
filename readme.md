@@ -12,9 +12,9 @@
 
 ## Links
 
-- **Live Demo:** [Vercel Frontend](https://vercel.com/<your-project>)
-- **Backend API:** [Render Deployment](https://render.com/<your-service>)
-- **GitHub Repository:** [github.com/<your-username>/AI_Assistent](https://github.com/<your-username>/AI_Assistent)
+- **Live Demo:** [Vercel Frontend](https://ai-assistant-gilt-iota.vercel.app)
+- **Backend API:** [Render Deployment](https://ai-assistant-jk09.onrender.com)
+- **GitHub Repository:** [github.com/<your-username>/AI_Assistent](https://github.com/Parbeen27/AI_assistant)
 - **Demo Video:** [Watch on YouTube](https://www.youtube.com/watch?v=<demo-link>)
 
 ---
