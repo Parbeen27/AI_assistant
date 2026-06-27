@@ -17,7 +17,7 @@ const toolNode = new ToolNode(tools)
 const llm = new ChatGroq({
   model:"llama-3.3-70b-versatile",
   temperature: 0.7,
-  maxTokens: 30,
+  maxTokens: 512,
   maxRetries: 2
 }).bindTools(tools)
 
@@ -26,14 +26,10 @@ const chatresponse = async(state)=>{
   const response = await llm.invoke([
     {
       role:"system",
-      content:`You are an AI assistant 
-      Use conversation memory first.
-      only use tools when the answer requires
-      external real-time information like:
-      weather,news,web search,stock prices etc.
-      
-      Do not call tools for simple conversation,
-      memory-based question, greetings, or personal context`
+      content:`You are a helpful AI assistant.
+
+Use the available tools whenever external or real-time information is required.
+If you already know the answer or it comes from conversation history, answer directly.`
     },
     ...state.messages
   ])
@@ -45,22 +41,20 @@ const chatresponse = async(state)=>{
 
 
 
-const shouldContinue = async(state) => { 
-  
-  const lastmsg = state.messages[state.messages.length-1]
-  
-  if(lastmsg.tool_calls.length>0){
-    return "tools"
+const shouldContinue = (state) => {
+  const last = state.messages.at(-1);
+
+  if (last.tool_calls?.length) {
+    return "tools";
   }
-  else{
-    return "__end__"
-  }
-}
+
+  return "__end__";
+};
 
 export const graph = new StateGraph(MessagesAnnotation)
 .addNode("agent",chatresponse)
 .addNode("tools",toolNode)
 .addEdge("__start__","agent")
-.addEdge("agent","tools")
 .addConditionalEdges("agent",shouldContinue)
+.addEdge("tools", "agent")
 .compile({checkpointer:checkPointer})

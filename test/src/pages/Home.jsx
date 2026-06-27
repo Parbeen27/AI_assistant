@@ -9,10 +9,12 @@ export default function Home() {
   const [message, setMessage] = useState("");
   const {setUser} = useContext(userData)
   const [isListening, setIsListening] = useState(false);
+  const [isTyping, setIsTyping] = useState(false)
   const isListeningRef = useRef(false);
   const recognitionRef = useRef(null);
   const [messages, setMessages] = useState([]);
   const navigate = useNavigate()
+  const bottomRef = useRef(null);
   
   const clearAll = () => {
   setMessages([]);
@@ -34,47 +36,51 @@ const logout = async() => {
     console.log(error);
   }
 }
-
 useEffect(() => {
-  const SpeechRecognition =
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition;
+  bottomRef.current?.scrollIntoView({
+    behavior: "smooth",
+  });
+}, [messages, isTyping]);
+// useEffect(() => {
+//   const SpeechRecognition =
+//     window.SpeechRecognition ||
+//     window.webkitSpeechRecognition;
 
-  if (!SpeechRecognition) {
-    console.log("Speech Recognition not supported");
-    return;
-  }
+//   if (!SpeechRecognition) {
+//     console.log("Speech Recognition not supported");
+//     return;
+//   }
 
-  const recognition = new SpeechRecognition();
+//   const recognition = new SpeechRecognition();
 
-  recognition.continuous = false;
-  recognition.interimResults = false;
-  recognition.lang = "en-US";
+//   recognition.continuous = false;
+//   recognition.interimResults = false;
+//   recognition.lang = "en-US";
 
-  recognition.onstart = () => {
-    console.log("Listening...");
-    setIsListening(true);
-  };
+//   recognition.onstart = () => {
+//     console.log("Listening...");
+//     setIsListening(true);
+//   };
 
-  recognition.onresult = (event) => {
-    const transcript = event.results[0][0].transcript;
-    console.log(transcript);
+//   recognition.onresult = (event) => {
+//     const transcript = event.results[0][0].transcript;
+//     console.log(transcript);
 
-    setMessage(transcript);
-  };
+//     setMessage(transcript);
+//   };
 
-  recognition.onerror = (event) => {
-    console.log("Speech Error:", event.error);
-    setIsListening(false);
-  };
+//   recognition.onerror = (event) => {
+//     console.log("Speech Error:", event.error);
+//     setIsListening(false);
+//   };
 
-  recognition.onend = () => {
-    console.log("Stopped");
-    setIsListening(false);
-  };
+//   recognition.onend = () => {
+//     console.log("Stopped");
+//     setIsListening(false);
+//   };
 
-  recognitionRef.current = recognition;
-}, []);
+//   recognitionRef.current = recognition;
+// }, []);
 
  const startListening = () => {
   if (!recognitionRef.current || isListening) return;
@@ -95,6 +101,8 @@ const handleSend = async () => {
   };
 
   setMessages((prev) => [...prev, userMessage]);
+  setMessage("")
+  setIsTyping(true)
 
   try {
     const res = await api.post("/user/ai", {
@@ -104,18 +112,27 @@ const handleSend = async () => {
     
     const aiMessage = {
       role: "assistant",
-      content: res.data.ai,
+      content: res.data.ai.response,
     };
 
     setMessages((prev) => [...prev, aiMessage]);
   } catch (error) {
     console.log(error);
+    setMessages((prev) => [
+      ...prev,
+      {
+        role: "assistant",
+        content: "Something went wrong.",
+      },
+    ]);
+  } finally{
+    setIsTyping(false)
   }
 
   setMessage("");
 };
   return (
-    <div className="w-full h-screen bg-linear-to-t from-black via-slate-950 to-blue-950 flex flex-col">
+    <div className="w-screen h-screen bg-linear-to-t from-black via-slate-950 to-blue-950 flex flex-col">
       {/* Header */}
       <div className="h-20 flex items-center justify-between px-6 border-b border-white/10">
   <h1 className="text-white text-2xl font-bold">
@@ -172,7 +189,21 @@ const handleSend = async () => {
     </button>
   </div>
 ))}
-
+{isTyping && (
+  <div className="self-start bg-white/10 text-white px-4 py-3 rounded-2xl max-w-fit">
+    <div className="flex gap-1">
+      <span className="h-2 w-2 rounded-full bg-white animate-bounce"></span>
+      <span
+        className="h-2 w-2 rounded-full bg-white animate-bounce"
+        style={{ animationDelay: "0.2s" }}
+      ></span>
+      <span
+        className="h-2 w-2 rounded-full bg-white animate-bounce"
+        style={{ animationDelay: "0.4s" }}
+      ></span>
+    </div>
+  </div>
+)}
   </div>
 </div>
       {/* Input Section */}
@@ -215,6 +246,7 @@ const handleSend = async () => {
           </div>
         </div>
       </div>
+      <div ref={bottomRef}></div>
     </div>
   );
 }

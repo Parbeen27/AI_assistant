@@ -3,6 +3,7 @@ import AppError from "../utils/error.utils.js"
 import { graph } from "../config/gemini.js"
 import moment from "moment"
 import { evaluate } from "mathjs"
+import { skills } from "../skills/index.js"
 export const getUserinfo = async(userId) => {
     const user = await User.findById(userId).select("-password")
     
@@ -14,79 +15,21 @@ export const getUserinfo = async(userId) => {
     }
 }
 
-function detectIntent(command) {
-    const input = command.toLowerCase().trim();
-
-    if (input.includes("youtube")) {
-        let query = input
-        .replace("search", "")
-        .replace("play", "")
-        .replace("find", "")
-        .replace("look up", "")
-        .replace("youtube", "")
-        .replace("on", "")
-        .replace("in", "")
-        .replace("for", "")
-        .trim();
-        return {
-            type: "youtube_search",
-            userinput: query
-        };
+function route(command) {
+    for (const skill of skills) {
+        const params = skill.match(command)
+        if(params){
+            return skill.execute(params)
+        }
     }
-
-    if (input.includes("open instagram")) {
-        return {
-            type: "instagram_open",
-            userinput: ""
-        };
-    }
-
-    if (input.includes("open facebook")) {
-        return {
-            type: "facebook_open",
-            userinput: ""
-        };
-    }
-
-    if (input.startsWith("play ")) {
-        return {
-            type: "youtube_play",
-            userinput: input.replace(/^play\s+/i, "")
-        };
-    }
-    if (input.includes("+") || input.includes("-") || input.includes("*") || input.includes("/")) {
-        const cal = input.split(" ")[1]
-        console.log(cal);
-        
-        return {
-            type: "calculation",
-            userinput: "calculate",
-            response: evaluate(cal)
-        };
-    }
-    
-
-    if (
-        input.startsWith("search ") ||
-        input.includes("google")
-    ) {
-        return {
-            type: "google_search",
-            userinput: input
-                .replace("search", "")
-                .replace("google", "")
-                .trim()
-        };
-    }
-
-    return null;
+    return null
 }
 
 export const Ask = async(command) => {
-    // const localIntent = detectIntent(command);
-    // if(localIntent){
-    //     return localIntent
-    // }
+    const localIntent = route(command);
+    if(localIntent){
+        return localIntent
+    }
     const msg = await graph.invoke({messages:[
         {
             role:"user",
@@ -94,5 +37,5 @@ export const Ask = async(command) => {
         }
     ]},
 {configurable:{thread_id:"user123"}})
-    return msg.messages[msg.messages.length-1].content
+    return { response: msg.messages[msg.messages.length-1].content}
 }
