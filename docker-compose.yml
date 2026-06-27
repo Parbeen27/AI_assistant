@@ -8,5 +8,7 @@ services:
   
   frontend:
     build: ./test
+    env_file:
+      - ./test/.env
     ports:
       - 5173:5173
